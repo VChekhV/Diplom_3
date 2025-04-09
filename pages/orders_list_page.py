@@ -1,9 +1,8 @@
-from random import randint
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import allure
 from pages.base_page import BasePage
-from faker import Faker
 from locators import Locators
-from constants import Constants
 
 
 class OrdersListPage(BasePage):
@@ -18,10 +17,14 @@ class OrdersListPage(BasePage):
         return self.wait_for_element_visible(Locators.ORDERS_POPUP)
 
     @allure.step("авторизация пользователя")
-    def sign_in(self):
+    def sign_in(self, email, password, personal_account_url):
         self.click_on_element(Locators.PERSONAL_ACCOUNT_BTN)
-        self.wait_for_page(Constants.PERSONAL_ACCOUNT_URL)
-        self.fill_login_form(Locators.INPUT_EMAIL, Constants.EMAIL, Locators.INPUT_PASSWORD, Constants.PASSWORD, Locators.SIGN_IN_BTN)
+        self.wait_for_page(personal_account_url)
+        self.fill_login_form(
+            Locators.INPUT_EMAIL, email,
+            Locators.INPUT_PASSWORD, password,
+            Locators.SIGN_IN_BTN
+        )
         self.find_element_with_wait(Locators.CONSTRUCTOR_TITLE)
 
     @allure.step("создание нового заказа")
@@ -36,13 +39,18 @@ class OrdersListPage(BasePage):
     def get_new_order_number(self):
         return '#0' + self.get_text_from_element(Locators.ORDER_NUMBER)
 
-    @allure.step("получение номера заказа")
+    @allure.step("получение номера заказа из списка")
     def find_new_order_number_in_orders_list(self):
         self.click_on_element(Locators.ORDERS_LIST_BTN)
         self.find_element_with_wait(Locators.ORDER_LIST_TITLE)
-        return self.get_text_from_element(Locators.ORDER_NUMBER_IN_LIST)
+        latest_order = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(Locators.LATEST_ORDER_NUMBER))
+        # Возвращаем номер без дополнительного '#' (только цифры)
+        return latest_order.text.lstrip('#')
 
-    @allure.step("после оформления заказа его номер появляется в разделе «В работе»")
+    @allure.step("получение номера заказа в разделе 'В работе'")
     def find_new_order_number_in_progress(self):
-        self.wait_for_element_visible(Locators.ORDER_IN_PROGRESS)
-        return '#' + self.get_text_from_element(Locators.ORDER_IN_PROGRESS)
+        # Ждем, пока номер заказа появится в разделе "В работе"
+        order_in_progress = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(Locators.ORDER_IN_PROGRESS))
+        return '#' + order_in_progress.text

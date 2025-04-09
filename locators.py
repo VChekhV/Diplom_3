@@ -48,3 +48,4 @@ class Locators:
     TODAY_ORDERS = (By.XPATH, "//p[text()='Выполнено за сегодня:']/following-sibling::p[contains(@class, 'OrderFeed_number')]")
     ORDER_IN_PROGRESS = (By.XPATH, "//ul[contains(@class, 'OrderFeed_orderListReady')]//li[contains(@class,'text_type_digits')]")
     LOADER = (By.XPATH, "//img[contains(@class, 'Modal_modal__loading')]")
+    LATEST_ORDER_NUMBER = (By.XPATH, "//div[contains(@class, 'OrderHistory_textBox')]//p[contains(@class, 'digits-default')][1]")

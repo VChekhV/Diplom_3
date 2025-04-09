@@ -1,6 +1,5 @@
 from locators import Locators
 from pages.change_password_page import ChangePasswordPage
-from constants import Constants
 import allure
 
 

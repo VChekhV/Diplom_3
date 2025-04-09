@@ -1,6 +1,5 @@
 from locators import Locators
 from pages.main_functions_page import MainFunctionsPage
-from constants import Constants
 import allure
 
 class TestMainFunctionsPage:
